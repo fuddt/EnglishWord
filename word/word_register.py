@@ -99,28 +99,37 @@ def insert_into_new_words(text):
         st.warning("新しい単語が見つかりませんでした。")
         return
     all_word_details = []
-    for i in range(0, len(new_words), batch_size):
-        word_batch = new_words[i : i + batch_size]
+    
+    # プログレスバーの初期化
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+
+    total_batches = len(range(0, len(new_words), batch_size))
+    
+    for i, start_idx in enumerate(range(0, len(new_words), batch_size)):
+        word_batch = new_words[start_idx : start_idx + batch_size]
         if not word_batch:  # バッチが空の場合はスキップ
             continue
+        
+        # プログレスバーと状態テキストの更新
+        progress = (i + 1) / total_batches
+        progress_bar.progress(progress)
+        status_text.text(f"処理中: {i+1}/{total_batches} バッチ")
+        
         word_details = openai_chat_completions_create(word_batch)
         all_word_details.extend(word_details)
+
+    # 処理完了後、プログレスバーを100%にし、完了メッセージを表示
+    progress_bar.progress(1.0)
+    status_text.text("処理完了!")
 
     # データベースに保存
     session = get_session()
     try:
-
-        progress_text = f"{len(all_word_details)} 単語を登録中..."
-        my_bar = st.progress(0, text=progress_text)
-        counter = 0
         for detail in all_word_details:
-            counter += 1
-            my_bar.progress(counter/len(all_word_details), text=progress_text)
             if not session.query(Word).filter_by(word=detail["word"]).first():
                 new_word = Word(word=detail["word"], meaning=detail["meaning"], sentence=detail["sentence"])
                 session.add(new_word)
-        time.sleep(1)
-        my_bar.empty()
         session.commit()
         st.success(f"{len(all_word_details)} 単語を登録しました。")
     except Exception as e:
