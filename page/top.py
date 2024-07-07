@@ -3,7 +3,7 @@ from word.word_register import insert_into_new_words
 
 # OpenAI APIキーの設定
 
-st.title("英単語登録アプリ")
+st.title("英単語アプリ")
 
 
 input_text = st.text_area("英文を入力してください:", height=400)
