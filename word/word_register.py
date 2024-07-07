@@ -108,9 +108,7 @@ def insert_into_new_words(text):
     # データベースに保存
     session = get_session()
     try:
-        print("all_word_details", all_word_details)
         for detail in all_word_details:
-            print("detail", detail)
             if not session.query(Word).filter_by(word=detail["word"]).first():
                 new_word = Word(word=detail["word"], meaning=detail["meaning"], sentence=detail["sentence"])
                 session.add(new_word)
