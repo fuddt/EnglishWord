@@ -101,7 +101,7 @@ if st.button("Reload"):
     pd.to_pickle(st.session_state["todayEnglish"]["meaning"], "shuffled_meanings.pkl")
     with open("correct_answer.pkl", "wb") as f:
         pickle.dump(st.session_state["correct_answer"], f)
-    st.retun()
+    st.rerun()
     
 
 
