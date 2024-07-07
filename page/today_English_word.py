@@ -38,7 +38,7 @@ if "shuffled_meanings" not in st.session_state:
     random.shuffle(st.session_state["shuffled_meanings"])
 else:
     if os.path.exists("shuffled_meanings.pkl"):
-        shuffled_meanings = pd.read_pickle("shuffled_meanings.pkl")
+        shuffled_meanings = pd.read_pickle("shuffled_meanings.pkl").tolist()
         st.session_state["shuffled_meanings"] = shuffled_meanings
         os.remove("shuffled_meanings.pkl")
 
@@ -77,7 +77,8 @@ if st.button("Submit"):
         for word, meaning in correct_pairs:
             st.session_state["todayEnglish"] = st.session_state["todayEnglish"][st.session_state["todayEnglish"]['word'] != word]
             st.session_state["correct_answer"].remove((word, meaning))
-            st.session_state["shuffled_meanings"].remove(meaning)
+            # shuffle_meaningsはpandasのSeriesなので、removeメソッドが使えない
+            st.session_state["shuffled_meanings"] = [m for m in st.session_state["shuffled_meanings"] if m != meaning]
     
     else:
         st.warning("No correct pairs. Try again.")
