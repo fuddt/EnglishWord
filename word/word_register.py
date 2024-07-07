@@ -4,6 +4,7 @@ from database.database import get_session, Word
 import streamlit as st
 import nltk
 import os
+import time
 
 client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
@@ -108,10 +109,18 @@ def insert_into_new_words(text):
     # データベースに保存
     session = get_session()
     try:
+
+        progress_text = f"{len(all_word_details)} 単語を登録中..."
+        my_bar = st.progress(0, text=progress_text)
+        counter = 0
         for detail in all_word_details:
+            counter += 1
+            my_bar.progress(counter/len(all_word_details), text=progress_text)
             if not session.query(Word).filter_by(word=detail["word"]).first():
                 new_word = Word(word=detail["word"], meaning=detail["meaning"], sentence=detail["sentence"])
                 session.add(new_word)
+        time.sleep(1)
+        my_bar.empty()
         session.commit()
         st.success(f"{len(all_word_details)} 単語を登録しました。")
     except Exception as e:
