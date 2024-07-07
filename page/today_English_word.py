@@ -75,6 +75,7 @@ if st.button("Submit"):
         st.success(f"You correctly matched {len(correct_pairs)} pairs!")
         # 正解したペアを削除
         for word, meaning in correct_pairs:
+            st.session_state["todayEnglish"] = st.session_state["todayEnglish"][st.session_state["todayEnglish"]['word'] != word]
             st.session_state["correct_answer"].remove((word, meaning))
             st.session_state["shuffled_meanings"].remove(meaning)
     
