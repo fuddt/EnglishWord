@@ -1,4 +1,4 @@
-import os
+
 import streamlit as st
 from streamlit_cookies_manager import EncryptedCookieManager
 

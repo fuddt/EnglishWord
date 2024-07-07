@@ -1,5 +1,6 @@
 pandas
 sqlalchemy
 nltk
-
+openai
+streamlit_cookies_manager
 
