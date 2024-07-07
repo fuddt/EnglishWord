@@ -1,4 +1,3 @@
-
 import streamlit as st
 from streamlit_cookies_manager import EncryptedCookieManager
 
@@ -67,7 +66,5 @@ if check_password():
             cookies["logged_in"] = "false"
             cookies.save()
             st.rerun()  # ページをリロードしてログアウトを反映
-
-
 else:
     st.write("Please enter the password to access the application.")
