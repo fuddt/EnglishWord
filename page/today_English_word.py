@@ -8,14 +8,6 @@ from forgetting_curve.forgetting_curve import select_words, update_word_after_re
 st.title("Today English Word")
 st.write("Let's learn a English word today!")
 
-if os.path.exists("todayEnglish.pkl"):
-    os.remove("todayEnglish.pkl")
-if os.path.exists("correct_answer.pkl"):
-    os.remove("correct_answer.pkl")
-if os.path.exists("shuffled_meanings.pkl"):
-    os.remove("shuffled_meanings.pkl")
-
-
 
 # 出題された単語
 if "todayEnglish" not in st.session_state:
@@ -52,9 +44,9 @@ else:
 
 select_boxs = {}
 selected_pairs = []
-for word in st.session_state["todayEnglish"]['word']:
+for word, sentence in zip(st.session_state["todayEnglish"]['word'], st.session_state["todayEnglish"]['sentence']):
     select_boxs[word] = st.empty()
-    selected_pair = select_boxs[word].selectbox(f"Select the meaning for '{word}':", options=[""] + st.session_state["shuffled_meanings"], key=word)
+    selected_pair = select_boxs[word].selectbox(f"{sentence} ; Select the meaning for '{word}':", options=[""] + st.session_state["shuffled_meanings"], key=word)
     selected_pairs.append((word, selected_pair))
     
 if st.button("Submit"):
