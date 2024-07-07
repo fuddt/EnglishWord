@@ -8,7 +8,8 @@ st.write("登録された英単語の一覧です。")
 conn = sqlite3.connect("words.db", check_same_thread=False)
 if 'words_list' not in st.session_state:
     try:
-        st.session_state['words_list'] = pd.read_sql("SELECT * FROM words", conn)
+        words_list = pd.read_sql("SELECT * FROM words", conn)
+        st.session_state['words_list'] = words_list
     except Exception as e:
         st.error(f"データベースの読み込み中にエラーが発生しました: {e}")
     
