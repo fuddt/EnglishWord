@@ -11,30 +11,35 @@ st.write("Let's learn a English word today!")
 # 出題された単語
 if "todayEnglish" not in st.session_state:
     if os.path.exists("todayEnglish.pkl"):
-        st.session_state["todayEnglish"] = pd.read_pickle("todayEnglish.pkl")
+        todayEnglish = pd.read_pickle("todayEnglish.pkl")
+        st.session_state["todayEnglish"] = todayEnglish
         # 一度読み込んだら削除
         os.remove("todayEnglish.pkl")
     else:
+        todayEnglish = select_words(10)
         st.session_state["todayEnglish"] = select_words(10)
 
 # 正解の組み合わせを作る tuple (word, meaning)
 if os.path.exists("correct_answer.pkl"):
     with open("correct_answer.pkl", "rb") as f:
-        st.session_state["correct_answer"] = pickle.load(f)
+        correct_answer = pickle.load(f)
+        st.session_state["correct_answer"] = correct_answer
     os.remove("correct_answer.pkl")
 else:
     if "correct_answer" not in st.session_state:
-        st.session_state["correct_answer"] = list(zip(st.session_state["todayEnglish"]["word"].tolist(), st.session_state["todayEnglish"]["meaning"].tolist()))
+        correct_answer = list(zip(st.session_state["todayEnglish"]["word"].tolist(), st.session_state["todayEnglish"]["meaning"].tolist()))
+        st.session_state["correct_answer"] = correct_answer
 
 
 # 意味はシャッフルして表示
 if os.path.exists("shuffled_meanings.pkl"):
-    st.session_state["shuffled_meanings"] = pd.read_pickle("shuffled_meanings.pkl")    
-    st.session_state["shuffled_meanings"] = st.session_state["todayEnglish"]['meaning'].tolist()
+    shuffled_meanings = pd.read_pickle("shuffled_meanings.pkl")
+    st.session_state["shuffled_meanings"] = shuffled_meanings
     os.remove("shuffled_meanings.pkl")
 else:
     if "shuffled_meanings" not in st.session_state:
-        st.session_state["shuffled_meanings"] = st.session_state["todayEnglish"]['meaning'].tolist()
+        shuffled_meanings = st.session_state["todayEnglish"]['meaning'].tolist()
+        st.session_state["shuffled_meanings"] = shuffled_meanings
         random.shuffle(st.session_state["shuffled_meanings"])
 
 select_boxs = {}
