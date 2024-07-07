@@ -8,6 +8,7 @@ from forgetting_curve.forgetting_curve import select_words, update_word_after_re
 st.title("Today English Word")
 st.write("Let's learn a English word today!")
 
+
 # 出題された単語
 if "todayEnglish" not in st.session_state:
     if os.path.exists("todayEnglish.pkl"):
@@ -20,27 +21,26 @@ if "todayEnglish" not in st.session_state:
         st.session_state["todayEnglish"] = select_words(10)
 
 # 正解の組み合わせを作る tuple (word, meaning)
-if os.path.exists("correct_answer.pkl"):
-    with open("correct_answer.pkl", "rb") as f:
-        correct_answer = pickle.load(f)
-        st.session_state["correct_answer"] = correct_answer
-    os.remove("correct_answer.pkl")
+if "correct_answer" not in st.session_state:
+    correct_answer = list(zip(st.session_state["todayEnglish"]["word"].tolist(), st.session_state["todayEnglish"]["meaning"].tolist()))
+    st.session_state["correct_answer"] = correct_answer
 else:
-    if "correct_answer" not in st.session_state:
-        correct_answer = list(zip(st.session_state["todayEnglish"]["word"].tolist(), st.session_state["todayEnglish"]["meaning"].tolist()))
-        st.session_state["correct_answer"] = correct_answer
-
-
+    if os.path.exists("correct_answer.pkl"):
+        with open("correct_answer.pkl", "rb") as f:
+            correct_answer = pickle.load(f)
+            st.session_state["correct_answer"] = correct_answer
+        os.remove("correct_answer.pkl")
+        
 # 意味はシャッフルして表示
-if os.path.exists("shuffled_meanings.pkl"):
-    shuffled_meanings = pd.read_pickle("shuffled_meanings.pkl")
+if "shuffled_meanings" not in st.session_state:
+    shuffled_meanings = st.session_state["todayEnglish"]['meaning'].tolist()
     st.session_state["shuffled_meanings"] = shuffled_meanings
-    os.remove("shuffled_meanings.pkl")
+    random.shuffle(st.session_state["shuffled_meanings"])
 else:
-    if "shuffled_meanings" not in st.session_state:
-        shuffled_meanings = st.session_state["todayEnglish"]['meaning'].tolist()
+    if os.path.exists("shuffled_meanings.pkl"):
+        shuffled_meanings = pd.read_pickle("shuffled_meanings.pkl")
         st.session_state["shuffled_meanings"] = shuffled_meanings
-        random.shuffle(st.session_state["shuffled_meanings"])
+        os.remove("shuffled_meanings.pkl")
 
 select_boxs = {}
 selected_pairs = []
@@ -77,9 +77,16 @@ if st.button("Submit"):
         for word, meaning in correct_pairs:
             st.session_state["correct_answer"].remove((word, meaning))
             st.session_state["shuffled_meanings"].remove(meaning)
+    
     else:
         st.warning("No correct pairs. Try again.")
-
+        
+    st.session_state["correct_answer"] = list(zip(st.session_state["todayEnglish"]["word"].tolist(), st.session_state["todayEnglish"]["meaning"].tolist()))
+    # 上記をpklファイルに保存
+    pd.to_pickle(st.session_state["todayEnglish"], "todayEnglish.pkl")
+    pd.to_pickle(st.session_state["todayEnglish"]["meaning"], "shuffled_meanings.pkl")
+    with open("correct_answer.pkl", "wb") as f:
+        pickle.dump(st.session_state["correct_answer"], f)
 
 st.number_input(
     "How many words do you remember?",
@@ -93,14 +100,8 @@ st.number_input(
 
 if st.button("Reload"):
     st.session_state["todayEnglish"] = select_words(st.session_state["remembered_words"])
-    st.session_state["shuffled_meanings"] = st.session_state["todayEnglish"]['meaning'].tolist()
-    random.shuffle(st.session_state["shuffled_meanings"])
-    st.session_state["correct_answer"] = list(zip(st.session_state["todayEnglish"]["word"].tolist(), st.session_state["todayEnglish"]["meaning"].tolist()))
     # 上記をpklファイルに保存
     pd.to_pickle(st.session_state["todayEnglish"], "todayEnglish.pkl")
-    pd.to_pickle(st.session_state["todayEnglish"]["meaning"], "shuffled_meanings.pkl")
-    with open("correct_answer.pkl", "wb") as f:
-        pickle.dump(st.session_state["correct_answer"], f)
     st.rerun()
     
 
