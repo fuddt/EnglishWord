@@ -8,6 +8,14 @@ from forgetting_curve.forgetting_curve import select_words, update_word_after_re
 st.title("Today English Word")
 st.write("Let's learn a English word today!")
 
+if os.path.exists("todayEnglish.pkl"):
+    os.remove("todayEnglish.pkl")
+if os.path.exists("correct_answer.pkl"):
+    os.remove("correct_answer.pkl")
+if os.path.exists("shuffled_meanings.pkl"):
+    os.remove("shuffled_meanings.pkl")
+
+
 
 # 出題された単語
 if "todayEnglish" not in st.session_state:
