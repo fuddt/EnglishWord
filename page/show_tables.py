@@ -41,7 +41,6 @@ if st.button("更新"):
         st.session_state['words_list']['id'] = range(1, len(st.session_state['words_list']) + 1)
         st.session_state['words_list'].to_sql("words", conn, if_exists="replace", index=False)
         st.success("データベースが更新されました。")
-        st.session_state['words_list'] = pd.read_sql("SELECT * FROM words", conn)
         st.rerun()
     except Exception as e:
         st.error(f"データベースの更新中にエラーが発生しました: {e}")
